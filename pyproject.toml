@@ -1,0 +1,20 @@
+[project]
+name = "ezsn-notify-email"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pytest>=9.0.2",
+]
+
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+line-length = 88
+fix = true
