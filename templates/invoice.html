@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice Email</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+
+    <p>Dear $customer_name,</p>
+
+    <p>I hope you are doing well.</p>
+
+    <p>
+        Please find attached the invoice for
+        <strong> $invoice_reference </strong> regarding
+        <strong> $service_description </strong>.
+    </p>
+
+    <table style="border-collapse: collapse; width: 100%; max-width: 500px;">
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Invoice Number</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"> $invoice_number </td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Invoice Date</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"> $invoice_date </td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Due Date</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"> $due_date </td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Amount Due</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"> $amount_due </td>
+        </tr>
+    </table>
+
+    <p>Kindly process the payment by the due date.</p>
+
+    <p>If you have any questions, please contact us.</p>
+
+    <p>Payment can be made via  $payment_method .</p>
+
+    <p>Thank you for your business.</p>
+
+    <p>
+        Best regards,<br>
+         $sender_name <br>
+         $company_name <br>
+         $contact_details
+    </p>
+
+</body>
+</html>
