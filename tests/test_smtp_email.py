@@ -1,8 +1,14 @@
+import os
 import smtplib
 from contextlib import contextmanager
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+# Import the necessary module
+from dotenv import load_dotenv
+
+# Load environment variables from the .env file (if present)
+load_dotenv()
 
 @contextmanager
 def smtp_connection(sender_email, password):
@@ -39,4 +45,4 @@ def smtp_email(sender_email, password, receiver_email):
 # Your email credentials
 sender_email = "gayathri.ma43@gmail.com"
 receiver_email = "NEC0914014@gmail.com"
-password = "wpcwqgbauwvadiac"  # Not your real password!
+password =os.getenv('PASSWORD')

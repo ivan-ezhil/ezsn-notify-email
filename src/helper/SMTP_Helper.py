@@ -1,14 +1,12 @@
 import os
 import smtplib
+from email import encoders
+from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from dotenv import load_dotenv
 
-# Load environment variables from the .env file (if present)
-load_dotenv()
-
-class smtp_connection():
+class SMTP_Connection():
     def __init__(self,host,port,sender_email,password):
         self.host=host
         self.port=port
@@ -21,16 +19,37 @@ class smtp_connection():
         self.server.login(self.sender_email, self.password)
         return self
 
-    def send_mail(self,receiver_email,subject,body):
+    def send_mail(self,receiver_email,subject,body,file_path,cc,bcc):
         # Create the email
         message = MIMEMultipart()
         message["From"] = self.sender_email
         message["To"] = receiver_email
         message["Subject"] = subject
+        filename = os.path.basename(file_path)
 
-        message.attach(MIMEText(body, "plain", "utf-8"))
+        with open(file_path, "rb") as f:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(f.read())
+            encoders.encode_base64(part)
 
-        self.server.send_message(message)
+            part.add_header("Content-Disposition", f"attachment; filename={filename}")
+            # ✅ Add CC (visible)
+            if cc:
+                message["Cc"] = ", ".join(cc) if isinstance(cc, list) else cc
+
+            message.attach(MIMEText(body, "html"))
+            message.attach(part)
+
+             # ✅ Combine all recipients
+            recipients = [receiver_email]
+
+            if cc:
+                recipients += cc if isinstance(cc, list) else [cc]
+
+            if bcc:
+                recipients += bcc if isinstance(bcc, list) else [bcc]
+
+        self.server.send_message(message,to_addrs=recipients)
         print("Email sent successfully!")
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
@@ -40,16 +59,3 @@ class smtp_connection():
         if exc_type:
             print(f"Exception: {exc_value}")
 
-# Usage
-with smtp_connection(
-    host='smtp.gmail.com',
-    port=587,
-    sender_email = "gayathri.ma43@gmail.com",
-    password =os.getenv('PASSWORD')
-) as smtp:
-
-    smtp.send_mail(
-        receiver_email = "NEC0914014@gmail.com",
-        subject='Test Mail',
-        body='Hello, this is a test email using Context Manager'
-    )

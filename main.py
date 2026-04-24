@@ -1,13 +1,12 @@
 from fastapi import FastAPI
+from Send_Email import EmailTemplate
 
 app = FastAPI()
 
-
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def home():
+    return {"message": "Server running"}
 
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str | None = None):
-    return {"item_id": item_id, "q": q}
+@app.post("/send-email")
+def send():
+    return {"message": "Email sent"}

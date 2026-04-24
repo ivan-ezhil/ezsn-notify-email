@@ -20,31 +20,24 @@ class EmailTemplate:
         return self.html_string
 
     def template_dynamic_var(self):
-        template_obj = Template(self.html_string)
+        self.template_obj = Template(self.html_string)
         self.dynamic_var_find = [
             match[1] or match[2]
-            for match in template_obj.pattern.findall(template_obj.template)
+            for match in self.template_obj.pattern.findall(self.template_obj.template)
             if match[1] or match[2]
         ]
         return self.dynamic_var_find
 
     def find_missing_input(self):
         for key in self.dynamic_var_find:
-            if key not in user_input:
+            if key not in self.user_input:
                 self.missing_input.append(key)
-        return self.missing_input
+        if self.missing_input:
+            raise ValueError(f"Missing inputs: {self.missing_input}")
+        return "All inputs are present"
 
-
-html_file = "templates/invoice.html"
-user_input = {
-    "customer_name": "$Nila,/n<b><script>alert('hi')</script>",
-    "invoice_reference": "Amazon",
-}
-
-et = EmailTemplate(html_file, user_input)
-et.read_file()
-print(et.template_dynamic_var())
-print(et.find_missing_input())
+    def apply(self):
+        return self.template_obj.substitute(self.user_input)
 
 
 def clean_username_bs4(text):

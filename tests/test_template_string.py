@@ -58,117 +58,116 @@ def clean_username_bs4(text):
 
     return text
 
+class TestInvoiceTemplate:
+    # Sample template
 
-# class TestInvoiceTemplate:
-#     # Sample template
+    # 1. Valid input test
+    def test_valid_input_rendering():
+        TEMPLATE = Template("Hello $customer_name, Invoice: $invoice_reference")
 
-#     # 1. Valid input test
-#     def test_valid_input_rendering():
-#         TEMPLATE = Template("Hello $customer_name, Invoice: $invoice_reference")
+        user_input = {"customer_name": "Gayathri", "invoice_reference": "Amazon"}
 
-#         user_input = {"customer_name": "Gayathri", "invoice_reference": "Amazon"}
+        result = TEMPLATE.substitute(user_input)
 
-#         result = TEMPLATE.substitute(user_input)
+        assert "Gayathri" in result
+        assert "Amazon" in result
 
-#         assert "Gayathri" in result
-#         assert "Amazon" in result
+    # 2. HTML tags should be removed
+    def test_remove_html_tags():
+        dirty_input = "<b>Gayathri</b>"
 
-#     # 2. HTML tags should be removed
-#     def test_remove_html_tags():
-#         dirty_input = "<b>Gayathri</b>"
+        cleaned = clean_username_bs4(dirty_input)
 
-#         cleaned = clean_username_bs4(dirty_input)
+        assert "<b>" not in cleaned
+        assert "</b>" not in cleaned
 
-#         assert "<b>" not in cleaned
-#         assert "</b>" not in cleaned
+    # 3. Script tags should be removed (security)
+    def test_remove_script_tags():
+        dirty_input = "<script>alert('hi')</script>"
 
-#     # 3. Script tags should be removed (security)
-#     def test_remove_script_tags():
-#         dirty_input = "<script>alert('hi')</script>"
+        cleaned = clean_username_bs4(dirty_input)
 
-#         cleaned = clean_username_bs4(dirty_input)
+        assert "script" not in cleaned.lower()
 
-#         assert "script" not in cleaned.lower()
+    # 4. Special characters removed
+    def test_remove_special_characters():
+        dirty_input = "!@#$%^&*()Gayathri"
 
-#     # 4. Special characters removed
-#     def test_remove_special_characters():
-#         dirty_input = "!@#$%^&*()Gayathri"
+        cleaned = clean_username_bs4(dirty_input)
 
-#         cleaned = clean_username_bs4(dirty_input)
+        assert "!" not in cleaned
+        assert "@" not in cleaned
+        assert "Gayathri" in cleaned
 
-#         assert "!" not in cleaned
-#         assert "@" not in cleaned
-#         assert "Gayathri" in cleaned
+    # 5. Trim whitespaces
+    def test_trim_whitespace():
+        dirty_input = "   Gayathri   "
 
-#     # 5. Trim whitespaces
-#     def test_trim_whitespace():
-#         dirty_input = "   Gayathri   "
+        cleaned = clean_username_bs4(dirty_input)
 
-#         cleaned = clean_username_bs4(dirty_input)
+        assert cleaned == "Gayathri"
 
-#         assert cleaned == "Gayathri"
+    # 6. Handle newline and tabs
+    def test_newline_and_tabs():
+        dirty_input = "Gayathri\nMA\tTest"
 
-#     # 6. Handle newline and tabs
-#     def test_newline_and_tabs():
-#         dirty_input = "Gayathri\nMA\tTest"
+        cleaned = clean_username_bs4(dirty_input)
 
-#         cleaned = clean_username_bs4(dirty_input)
+        assert "\n" not in cleaned
+        assert "\t" not in cleaned
+        assert cleaned == "GayathriMATest"
 
-#         assert "\n" not in cleaned
-#         assert "\t" not in cleaned
-#         assert cleaned == "GayathriMATest"
+    # 7. Empty input handling
+    def test_empty_input():
+        cleaned = clean_username_bs4("")
 
-#     # 7. Empty input handling
-#     def test_empty_input():
-#         cleaned = clean_username_bs4("")
+        assert cleaned == ""
 
-#         assert cleaned == ""
+    # 8. Only spaces input
+    def test_only_spaces():
+        cleaned = clean_username_bs4("     ")
 
-#     # 8. Only spaces input
-#     def test_only_spaces():
-#         cleaned = clean_username_bs4("     ")
+        assert cleaned == ""
 
-#         assert cleaned == ""
+    # 9. Missing template variables
+    def test_missing_variables():
+        html = "Hello $customer_name, Date: $date"
+        t = Template(html)
 
-#     # 9. Missing template variables
-#     def test_missing_variables():
-#         html = "Hello $customer_name, Date: $date"
-#         t = Template(html)
+        user_input = {"customer_name": "Gayathri"}
 
-#         user_input = {"customer_name": "Gayathri"}
+        missing_input = find_missing_input(t, user_input)
 
-#         missing_input = find_missing_inputs(t, user_input)
+        assert "date" in missing_input
 
-#         assert "date" in missing_input
+    # 10. All variables present
+    def test_all_variables_present():
+        html = "Hello $customer_name, Invoice: $invoice_reference"
+        t = Template(html)
 
-#     # 10. All variables present
-#     def test_all_variables_present():
-#         html = "Hello $customer_name, Invoice: $invoice_reference"
-#         t = Template(html)
+        user_input = {"customer_name": "Gayathri", "invoice_reference": "Amazon"}
 
-#         user_input = {"customer_name": "Gayathri", "invoice_reference": "Amazon"}
+        missing_input = find_missing_input(t, user_input)
 
-#         missing_input = find_missing_inputs(t, user_input)
+        assert missing_input == []
 
-#         assert missing_input == []
+    # 11. Safe substitution (no crash)
+    def test_safe_substitute():
+        html = "Hello $customer_name, Date: $date"
+        t = Template(html)
 
-#     # 11. Safe substitution (no crash)
-#     def test_safe_substitute():
-#         html = "Hello $customer_name, Date: $date"
-#         t = Template(html)
+        user_input = {"customer_name": "Gayathri"}
 
-#         user_input = {"customer_name": "Gayathri"}
+        result = t.safe_substitute(user_input)
 
-#         result = t.safe_substitute(user_input)
+        assert "$date" in result  # not replaced but no crash
 
-#         assert "$date" in result  # not replaced but no crash
+    # 12. Malicious combined input
+    def test_malicious_input_cleaning():
+        dirty_input = "$Nila,/n<b><script>alert('hi')</script>"
 
-#     # 12. Malicious combined input
-#     def test_malicious_input_cleaning():
-#         dirty_input = "$Nila,/n<b><script>alert('hi')</script>"
+        cleaned = clean_username_bs4(dirty_input)
 
-#         cleaned = clean_username_bs4(dirty_input)
-
-#         assert "<" not in cleaned
-#         assert ">" not in cleaned
-#         assert "script" not in cleaned.lower()
+        assert "<" not in cleaned
+        assert ">" not in cleaned
+        assert "script" not in cleaned.lower()
