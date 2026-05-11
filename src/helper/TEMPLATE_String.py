@@ -3,7 +3,7 @@ from string import Template
 
 
 class EmailTemplate:
-    def __init__(self, html_file, user_input):
+    def __init__(self, html_file:str, user_input:dict):
         self.html_string = None
         self.html_file = html_file
         self.user_input = user_input
